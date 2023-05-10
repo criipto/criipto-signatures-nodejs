@@ -1,6 +1,6 @@
 {
   "name": "@criipto/signatures",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "A Node.js SDK for Criipto Signatures",
   "main": "dist/index.js",
@@ -49,10 +49,10 @@
   },
   "ava": {
     "typescript": {
-			"rewritePaths": {
-				"test/": "dist/test/"
-			},
-			"compile": false
-		}
+      "rewritePaths": {
+        "test/": "dist/test/"
+      },
+      "compile": false
+    }
   }
 }
