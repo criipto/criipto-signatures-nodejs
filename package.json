@@ -7,7 +7,7 @@
   "scripts": {
     "codegen": "graphql-codegen",
     "test": "npm run test:integration",
-    "test:integration": "ava --timeout=60s --verbose",
+    "test:integration": "mkdir -p dist/test/integration/ && cp src/test/integration/sample.pdf dist/test/integration/sample.pdf && ava dist/test/**/*.test.js --timeout=60s --verbose",
     "clean": "rm -rf dist/",
     "build": "tsc"
   },
@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/criipto/criipto-signatures-nodejs#readme",
   "devDependencies": {
+    "@ava/typescript": "^4.0.0",
     "@graphql-codegen/cli": "^3.3.1",
     "@graphql-codegen/typescript": "^3.0.4",
     "@graphql-codegen/typescript-graphql-request": "^4.5.9",
@@ -44,11 +45,11 @@
     "graphql-request": "^4.0.0"
   },
   "ava": {
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
+    "typescript": {
+			"rewritePaths": {
+				"test/": "dist/test/"
+			},
+			"compile": "tsc"
+		}
   }
 }
