@@ -13,5 +13,6 @@ jobs:
       - run: npm ci
       - run: npm run test:integration
         env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
           CRIIPTO_SIGNATURES_CLIENT_ID: ${{ secrets.CRIIPTO_SIGNATURES_CLIENT_ID }}
           CRIIPTO_SIGNATURES_CLIENT_SECRET: ${{ secrets.CRIIPTO_SIGNATURES_CLIENT_SECRET }}
