@@ -2,18 +2,17 @@ import { GraphQLClient } from 'graphql-request';
 import { AddSignatoriesInput, AddSignatoryInput, ChangeSignatoryInput, CloseSignatureOrderInput, CreateSignatureOrderInput, getSdk, Sdk, SignActingAsInput } from './graphql-sdk';
 
 import  * as Types from './graphql-sdk';
-export {Types};
+export {Types as CriiptoSignaturesTypes};
 
 export class CriiptoSignatures {
   client: GraphQLClient;
   sdk: Sdk;
  
-  constructor(clientId: string, clientSecret: string);
-  constructor(clientId: string, clientSecret: string, criiptoSdk: string = "criipto-signatures-nodejs") {
+  constructor(clientId: string, clientSecret: string) {
     this.client = new GraphQLClient('https://signatures-api.criipto.com/v1/graphql', {
       headers: {
         Authorization: `Basic ${Buffer.from(clientId + ':' + clientSecret).toString('base64')}`,
-        "Criipto-Sdk": criiptoSdk
+        "Criipto-Sdk": "criipto-signatures-nodejs"
       }
     });
     this.sdk = getSdk(this.client);
@@ -26,7 +25,7 @@ export class CriiptoSignatures {
     return response.createSignatureOrder!.signatureOrder;
   }
 
-  async addSignatory(signatureOrderId: string, input: Omit<AddSignatoryInput, 'signatureOrderId'>) {
+  async addSignatory(signatureOrderId: string, input?: Omit<AddSignatoryInput, 'signatureOrderId'>) {
     const response = await this.sdk.addSignatory({
       input: {
         ...input,
@@ -94,7 +93,7 @@ export class CriiptoSignatures {
     return response.signActingAs!.signatory;
   }
 
-  async querySignatureOrder(signatureOrderId: string, includeDocuments: boolean = false) {
+  async querySignatureOrder(signatureOrderId: string, includeDocuments: boolean = false) : Promise<null | NonNullable<Types.SignatureOrderWithDocumentsQuery["signatureOrder"]> | NonNullable<Types.SignatureOrderQuery["signatureOrder"]>> {
     const response = includeDocuments ? await this.sdk.signatureOrderWithDocuments({id: signatureOrderId}) : await this.sdk.signatureOrder({id: signatureOrderId});
     return response.signatureOrder ?? null;
   }

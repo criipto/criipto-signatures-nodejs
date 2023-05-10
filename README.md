@@ -34,12 +34,12 @@ const client = new CriiptoSignatures("{YOUR_CRIIPTO_CLIENT_ID}", "{YOUR_CRIIPTO_
 
 // Create signature order
 const signatureOrder = await client.createSignatureOrder({
-  titl: "Node.js sample",
+  title: "Node.js sample",
   documents: [
     {
       pdf: {
         title: "Node.js Sample",
-        blob: pdf, // Buffer
+        blob: pdf.toString('base64'),
         storageMode: 'Temporary'
       }
     }
