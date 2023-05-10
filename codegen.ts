@@ -17,7 +17,7 @@ const config: CodegenConfig = {
         },
         enumsAsTypes: true,
         scalars: {
-          Blob: 'string',
+          Blob: 'Buffer',
           Date: 'string',
           DateTime: 'string',
           URI: 'string'

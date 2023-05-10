@@ -7,9 +7,11 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "codegen": "graphql-codegen",
-    "test": "npm run test:integration",
-    "test:integration": "npm run build && cp src/test/integration/sample.pdf dist/test/integration/sample.pdf && ava dist/test/**/*.test.js --timeout=60s --verbose",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:integration": "npm run build && cp src/test/integration/sample.pdf dist/test/integration/sample.pdf && ava dist/test/integration/*.test.js --timeout=60s --verbose",
+    "test:unit": "npm run build && ava dist/test/unit/*.test.js",
     "clean": "rm -rf dist/",
+    "check": "tsc --noEmit",
     "build": "tsc"
   },
   "repository": {

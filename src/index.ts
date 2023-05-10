@@ -2,6 +2,7 @@ import { GraphQLClient } from 'graphql-request';
 import { AddSignatoriesInput, AddSignatoryInput, ChangeSignatoryInput, CloseSignatureOrderInput, CreateSignatureOrderInput, getSdk, Sdk, SignActingAsInput } from './graphql-sdk';
 
 import  * as Types from './graphql-sdk';
+import jsonSerializer from './json-serializer';
 export {Types as CriiptoSignaturesTypes};
 
 export class CriiptoSignatures {
@@ -13,7 +14,8 @@ export class CriiptoSignatures {
       headers: {
         Authorization: `Basic ${Buffer.from(clientId + ':' + clientSecret).toString('base64')}`,
         "Criipto-Sdk": "criipto-signatures-nodejs"
-      }
+      },
+      jsonSerializer
     });
     this.sdk = getSdk(this.client);
   }

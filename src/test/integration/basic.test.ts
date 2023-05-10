@@ -26,7 +26,7 @@ test('can create signature order with signatory', async t => {
       {
         pdf: {
           title: "Node.js Sample",
-          blob: sample.toString('base64'), // Buffer
+          blob: sample, // Buffer
           storageMode: 'Temporary'
         }
       }
@@ -44,6 +44,7 @@ test('can create signature order with signatory', async t => {
   t.truthy(fetched);
   t.truthy(fetched!.id);
   t.truthy("documents" in fetched! ? fetched!.documents[0].blob! : null as any);
+  t.truthy("documents" in fetched! ? Buffer.isBuffer(fetched!.documents[0].blob!) : null as any);
 
   await client.cancelSignatureOrder(signatureOrder!.id);
 });
