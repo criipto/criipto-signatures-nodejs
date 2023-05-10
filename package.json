@@ -7,7 +7,7 @@
   "scripts": {
     "codegen": "graphql-codegen",
     "test": "npm run test:integration",
-    "test:integration": "mkdir -p dist/test/integration/ && cp src/test/integration/sample.pdf dist/test/integration/sample.pdf && ava dist/test/**/*.test.js --timeout=60s --verbose",
+    "test:integration": "npm run build && cp src/test/integration/sample.pdf dist/test/integration/sample.pdf && ava dist/test/**/*.test.js --timeout=60s --verbose",
     "clean": "rm -rf dist/",
     "build": "tsc"
   },
@@ -49,7 +49,7 @@
 			"rewritePaths": {
 				"test/": "dist/test/"
 			},
-			"compile": "tsc"
+			"compile": false
 		}
   }
 }
