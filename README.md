@@ -12,7 +12,7 @@ This library supports Node 16 and later.
 
 ### Installation
 
-The SDK is available on [NPM](https://npmjs.com/package/@criipto/signaturess):
+The SDK is available on [NPM](https://npmjs.com/package/@criipto/signatures):
 
 ```
 npm install --save @criipto/signatures
