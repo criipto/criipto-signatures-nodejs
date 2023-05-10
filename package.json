@@ -7,7 +7,7 @@
   "scripts": {
     "codegen": "graphql-codegen",
     "test": "npm run test:integration",
-    "test:integration": "ava --timeout=60s",
+    "test:integration": "ava --timeout=60s --verbose",
     "clean": "rm -rf dist/",
     "build": "tsc"
   },
