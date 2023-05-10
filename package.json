@@ -1,0 +1,33 @@
+{
+  "name": "@criipto/signatures",
+  "version": "1.0.0",
+  "description": "A Node.js SDK for Criipto Signatures",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/criipto/criipto-signatures-nodejs.git"
+  },
+  "keywords": [
+    "criipto",
+    "signatures",
+    "pades",
+    "mitid",
+    "sebankid",
+    "nobankid"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/criipto/criipto-signatures-nodejs/issues"
+  },
+  "homepage": "https://github.com/criipto/criipto-signatures-nodejs#readme",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "^5.0.4"
+  }
+}
