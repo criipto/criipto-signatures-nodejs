@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "codegen": "graphql-codegen",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
@@ -27,7 +28,15 @@
   },
   "homepage": "https://github.com/criipto/criipto-signatures-nodejs#readme",
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/typescript": "^3.0.4",
+    "@graphql-codegen/typescript-graphql-request": "^4.5.9",
+    "@graphql-codegen/typescript-operations": "^3.0.4",
     "@tsconfig/node16": "^1.0.3",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "graphql": "^16.6.0",
+    "graphql-request": "^4.0.0"
   }
 }

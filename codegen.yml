@@ -1,0 +1,8 @@
+schema: https://signatures-api.criipto.com/v1/graphql
+generates:
+  src/graphql-sdk.ts:
+    documents: './src/*.graphql'
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request

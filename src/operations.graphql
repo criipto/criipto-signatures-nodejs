@@ -1,0 +1,157 @@
+fragment BasicDocument on Document {
+  __typename
+  id   
+}
+fragment SignedDocument on Document {
+  blob
+  signatures {
+    __typename
+    signatory {
+      id
+    }
+
+    ... on JWTSignature {
+      jwt
+      jwks
+    }
+  }
+}
+fragment BasicSignatory on Signatory {
+  id
+  status
+  href
+  downloadHref
+  reference
+  role
+
+  evidenceProviders {
+    __typename
+    id
+  }
+
+  documents {
+    edges {
+      status
+      node {
+        __typename
+        id
+      }
+    }
+  }
+}
+fragment BasicSignatureOrder on SignatureOrder {
+  id
+  status
+
+  signatories {
+    ...BasicSignatory
+  }
+
+  evidenceProviders {
+    __typename
+    id
+  }
+}
+
+mutation createSignatureOrder($input: CreateSignatureOrderInput!) {
+  createSignatureOrder(input: $input) {
+    signatureOrder {
+      ... BasicSignatureOrder
+      documents {
+        ...BasicDocument
+      }
+    }
+  }
+}
+
+mutation cleanupSignatureOrder($input: CleanupSignatureOrderInput!) {
+  cleanupSignatureOrder(input: $input) {
+    signatureOrder {
+      ... BasicSignatureOrder
+      documents {
+        ...BasicDocument
+      }
+    }
+  }
+}
+
+mutation addSignatory($input: AddSignatoryInput!) {
+  addSignatory(input: $input) {
+    signatory {
+      ...BasicSignatory
+    }
+  }
+}
+
+mutation addSignatories($input: AddSignatoriesInput!) {
+  addSignatories(input: $input) {
+    signatories {
+      ...BasicSignatory
+    }
+  }
+}
+
+mutation changeSignatory($input: ChangeSignatoryInput!) {
+  changeSignatory(input: $input) {
+    signatory {
+      ...BasicSignatory
+    }
+  }
+}
+
+mutation closeSignatureOrder($input: CloseSignatureOrderInput!) {
+  closeSignatureOrder(input: $input) {
+    signatureOrder {
+      ... BasicSignatureOrder
+      documents {
+        ...BasicDocument
+        ...SignedDocument
+      }
+    }
+  }
+}
+
+mutation cancelSignatureOrder($input: CancelSignatureOrderInput!) {
+  cancelSignatureOrder(input: $input) {
+    signatureOrder {
+      ... BasicSignatureOrder
+      documents {
+        ...BasicDocument
+      }
+    }
+  }
+}
+
+mutation signActingAs($input: SignActingAsInput!) {
+  signActingAs(input: $input) {
+    signatory {
+      ...BasicSignatory
+    }
+  }
+}
+
+query signatureOrder($id: ID!) {
+  signatureOrder(id: $id) {
+    ... BasicSignatureOrder
+  }
+}
+
+query signatureOrderWithDocuments($id: ID!) {
+  signatureOrder(id: $id) {
+    ... BasicSignatureOrder
+
+    documents {
+      ...BasicDocument
+      ...SignedDocument
+    }
+  }
+}
+
+query signatory($id: ID!) {
+  signatory(id: $id) {
+    ...BasicSignatory
+    signatureOrder {
+      ...BasicSignatureOrder
+    }
+  }
+}
