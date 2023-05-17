@@ -64,6 +64,7 @@ export type Application = Viewer & {
   /** Tenants are only accessable from user viewers */
   tenant?: Maybe<Tenant>;
   verifyApplication: VerifyApplication;
+  webhookLogs: Array<WebhookInvocation>;
 };
 
 
@@ -71,6 +72,13 @@ export type ApplicationSignatureOrdersArgs = {
   after?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
   status?: InputMaybe<SignatureOrderStatus>;
+};
+
+
+export type ApplicationWebhookLogsArgs = {
+  from: Scalars['String'];
+  succeeded?: InputMaybe<Scalars['Boolean']>;
+  to: Scalars['String'];
 };
 
 export type ApplicationApiKey = {
@@ -84,7 +92,8 @@ export type ApplicationApiKey = {
 
 export type ApplicationApiKeyMode =
   | 'READ_ONLY'
-  | 'READ_WRITE';
+  | 'READ_WRITE'
+  | '%future added value';
 
 export type CancelSignatureOrderInput = {
   signatureOrderId: Scalars['ID'];
@@ -287,7 +296,8 @@ export type DocumentInput = {
 /** Document storage mode. Temporary documents will be deleted once completed. */
 export type DocumentStorageMode =
   /** Temporary documents will be deleted once completed. */
-  | 'Temporary';
+  | 'Temporary'
+  | '%future added value';
 
 export type DownloadVerificationCriiptoVerifyInput = {
   jwt: Scalars['String'];
@@ -342,7 +352,8 @@ export type EvidenceProviderInput = {
 export type EvidenceValidationStage =
   | 'SIGN'
   /** Require the signatory to be validated before viewing documents */
-  | 'VIEW';
+  | 'VIEW'
+  | '%future added value';
 
 export type ExtendSignatureOrderInput = {
   /** Expiration to add to order, in days, max 30. */
@@ -366,7 +377,8 @@ export type Language =
   | 'DA_DK'
   | 'EN_US'
   | 'NB_NO'
-  | 'SV_SE';
+  | 'SV_SE'
+  | '%future added value';
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -398,6 +410,7 @@ export type Mutation = {
   refreshApplicationApiKey?: Maybe<RefreshApplicationApiKeyOutput>;
   /** Used by Signatory frontends to reject a signature order in full. */
   rejectSignatureOrder?: Maybe<RejectSignatureOrderOutput>;
+  retrySignatureOrderWebhook?: Maybe<RetrySignatureOrderWebhookOutput>;
   /** Used by Signatory frontends to sign the documents in a signature order. */
   sign?: Maybe<SignOutput>;
   /** Sign with API credentials acting as a specific signatory. The signatory MUST be preapproved in this case. */
@@ -478,6 +491,11 @@ export type MutationRefreshApplicationApiKeyArgs = {
 
 export type MutationRejectSignatureOrderArgs = {
   input: RejectSignatureOrderInput;
+};
+
+
+export type MutationRetrySignatureOrderWebhookArgs = {
+  input: RetrySignatureOrderWebhookInput;
 };
 
 
@@ -635,6 +653,16 @@ export type RejectSignatureOrderOutput = {
   viewer: Viewer;
 };
 
+export type RetrySignatureOrderWebhookInput = {
+  retryPayload: Scalars['String'];
+  signatureOrderId: Scalars['ID'];
+};
+
+export type RetrySignatureOrderWebhookOutput = {
+  __typename?: 'RetrySignatureOrderWebhookOutput';
+  invocation: WebhookInvocation;
+};
+
 export type SignActingAsInput = {
   evidence: SignInput;
   signatoryId: Scalars['ID'];
@@ -725,7 +753,9 @@ export type SignatoryDocumentStatus =
   | 'APPROVED'
   | 'OPENED'
   | 'PREAPPROVED'
-  | 'REJECTED';
+  | 'REJECTED'
+  | 'SIGNED'
+  | '%future added value';
 
 export type SignatoryEvidenceProviderInput = {
   id: Scalars['ID'];
@@ -738,14 +768,16 @@ export type SignatoryEvidenceValidationInput = {
 
 export type SignatoryFrontendEvent =
   | 'DOWNLOAD_LINK_OPENED'
-  | 'SIGN_LINK_OPENED';
+  | 'SIGN_LINK_OPENED'
+  | '%future added value';
 
 export type SignatoryStatus =
   | 'DELETED'
   | 'ERROR'
   | 'OPEN'
   | 'REJECTED'
-  | 'SIGNED';
+  | 'SIGNED'
+  | '%future added value';
 
 export type SignatoryViewer = Viewer & {
   __typename?: 'SignatoryViewer';
@@ -816,6 +848,7 @@ export type SignatureOrder = {
   timezone: Scalars['String'];
   title?: Maybe<Scalars['String']>;
   ui: SignatureOrderUi;
+  webhook?: Maybe<SignatureOrderWebhook>;
 };
 
 /** A connection from an object to a list of objects of type SignatureOrder */
@@ -842,7 +875,8 @@ export type SignatureOrderStatus =
   | 'CANCELLED'
   | 'CLOSED'
   | 'EXPIRED'
-  | 'OPEN';
+  | 'OPEN'
+  | '%future added value';
 
 export type SignatureOrderUi = {
   __typename?: 'SignatureOrderUI';
@@ -866,15 +900,36 @@ export type SignatureOrderUiLogoInput = {
   src: Scalars['String'];
 };
 
+export type SignatureOrderWebhook = {
+  __typename?: 'SignatureOrderWebhook';
+  logs: Array<WebhookInvocation>;
+  url: Scalars['String'];
+};
+
+
+export type SignatureOrderWebhookLogsArgs = {
+  from: Scalars['String'];
+  succeeded?: InputMaybe<Scalars['Boolean']>;
+  to: Scalars['String'];
+};
+
 export type Tenant = {
   __typename?: 'Tenant';
   applications: Array<Application>;
   id: Scalars['ID'];
+  webhookLogs: Array<WebhookInvocation>;
 };
 
 
 export type TenantApplicationsArgs = {
   domain?: InputMaybe<Scalars['String']>;
+};
+
+
+export type TenantWebhookLogsArgs = {
+  from: Scalars['String'];
+  succeeded?: InputMaybe<Scalars['Boolean']>;
+  to: Scalars['String'];
 };
 
 export type TrackSignatoryInput = {
@@ -928,7 +983,8 @@ export type VerifyApplication = {
 
 export type VerifyApplicationEnvironment =
   | 'PRODUCTION'
-  | 'TEST';
+  | 'TEST'
+  | '%future added value';
 
 export type VerifyApplicationQueryInput = {
   domain: Scalars['String'];
@@ -938,6 +994,80 @@ export type VerifyApplicationQueryInput = {
 
 export type Viewer = {
   id: Scalars['ID'];
+};
+
+export type WebhookExceptionInvocation = WebhookInvocation & {
+  __typename?: 'WebhookExceptionInvocation';
+  correlationId: Scalars['String'];
+  event?: Maybe<WebhookInvocationEvent>;
+  exception: Scalars['String'];
+  requestBody: Scalars['String'];
+  responseBody?: Maybe<Scalars['String']>;
+  retryPayload: Scalars['String'];
+  retryingAt?: Maybe<Scalars['String']>;
+  signatureOrderId?: Maybe<Scalars['String']>;
+  timestamp: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type WebhookHttpErrorInvocation = WebhookInvocation & {
+  __typename?: 'WebhookHttpErrorInvocation';
+  correlationId: Scalars['String'];
+  event?: Maybe<WebhookInvocationEvent>;
+  requestBody: Scalars['String'];
+  responseBody?: Maybe<Scalars['String']>;
+  responseStatusCode: Scalars['Int'];
+  retryPayload: Scalars['String'];
+  retryingAt?: Maybe<Scalars['String']>;
+  signatureOrderId?: Maybe<Scalars['String']>;
+  timestamp: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type WebhookInvocation = {
+  correlationId: Scalars['String'];
+  event?: Maybe<WebhookInvocationEvent>;
+  requestBody: Scalars['String'];
+  responseBody?: Maybe<Scalars['String']>;
+  signatureOrderId?: Maybe<Scalars['String']>;
+  timestamp: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type WebhookInvocationEvent =
+  | 'SIGNATORY_DOCUMENT_STATUS_CHANGED'
+  | 'SIGNATORY_DOWNLOAD_LINK_OPENED'
+  | 'SIGNATORY_REJECTED'
+  | 'SIGNATORY_SIGNED'
+  | 'SIGNATORY_SIGN_ERROR'
+  | 'SIGNATORY_SIGN_LINK_OPENED'
+  | 'SIGNATURE_ORDER_EXPIRED'
+  | '%future added value';
+
+export type WebhookSuccessfulInvocation = WebhookInvocation & {
+  __typename?: 'WebhookSuccessfulInvocation';
+  correlationId: Scalars['String'];
+  event?: Maybe<WebhookInvocationEvent>;
+  requestBody: Scalars['String'];
+  responseBody?: Maybe<Scalars['String']>;
+  responseStatusCode: Scalars['Int'];
+  signatureOrderId?: Maybe<Scalars['String']>;
+  timestamp: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type WebhookTimeoutInvocation = WebhookInvocation & {
+  __typename?: 'WebhookTimeoutInvocation';
+  correlationId: Scalars['String'];
+  event?: Maybe<WebhookInvocationEvent>;
+  requestBody: Scalars['String'];
+  responseBody?: Maybe<Scalars['String']>;
+  responseTimeout: Scalars['Int'];
+  retryPayload: Scalars['String'];
+  retryingAt?: Maybe<Scalars['String']>;
+  signatureOrderId?: Maybe<Scalars['String']>;
+  timestamp: Scalars['String'];
+  url: Scalars['String'];
 };
 
 export type BasicDocumentFragment = { __typename: 'PdfDocument', id: string };

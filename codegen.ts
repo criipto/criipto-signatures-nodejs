@@ -16,6 +16,7 @@ const config: CodegenConfig = {
           enumValues: 'keep'
         },
         enumsAsTypes: true,
+        futureProofEnums: true,
         scalars: {
           Blob: 'Buffer',
           Date: 'string',
