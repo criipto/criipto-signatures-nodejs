@@ -41,7 +41,7 @@ const signatureOrder = await client.createSignatureOrder({
     {
       pdf: {
         title: "Node.js Sample",
-        blob: pdf.toString('base64'),
+        blob: pdf // Buffer
         storageMode: 'Temporary'
       }
     }
