@@ -12,7 +12,8 @@
     "test:unit": "npm run build && ava dist/test/unit/*.test.js",
     "clean": "rm -rf dist/",
     "check": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
