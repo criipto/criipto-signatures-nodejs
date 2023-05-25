@@ -1,8 +1,11 @@
 fragment BasicDocument on Document {
   __typename
-  id   
+  id
+  title
 }
 fragment SignedDocument on Document {
+  id
+  title
   blob
   signatures {
     __typename
@@ -42,6 +45,7 @@ fragment BasicSignatory on Signatory {
 fragment BasicSignatureOrder on SignatureOrder {
   id
   status
+  title
 
   signatories {
     ...BasicSignatory
