@@ -104,6 +104,21 @@ export class CriiptoSignatures {
     const response = await this.sdk.signatory({id: signatoryId});
     return response.signatory ?? null;
   }
+
+  async querySignatureOrders(query: {
+    first: number,
+    after?: string
+    status?: Types.SignatureOrderStatus
+  } = {first: 10}) {
+    const response = await this.sdk.signatureOrders({
+      first: query.first,
+      after: query.after,
+      status: query.status
+    });
+
+    if (response.viewer.__typename !== 'Application') throw new Error('Unexpected viewer type');
+    return response.viewer.signatureOrders.edges.map(e => e.node);
+  }
 }
 
 export default CriiptoSignatures;
