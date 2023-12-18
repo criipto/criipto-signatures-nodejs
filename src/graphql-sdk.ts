@@ -431,6 +431,7 @@ export type Mutation = {
   trackSignatory?: Maybe<TrackSignatoryOutput>;
   /** Used by Signatory frontends to mark documents as opened, approved or rejected. */
   updateSignatoryDocumentStatus?: Maybe<UpdateSignatoryDocumentStatusOutput>;
+  validateDocument?: Maybe<ValidateDocumentOutput>;
 };
 
 
@@ -531,6 +532,11 @@ export type MutationTrackSignatoryArgs = {
 
 export type MutationUpdateSignatoryDocumentStatusArgs = {
   input: UpdateSignatoryDocumentStatusInput;
+};
+
+
+export type MutationValidateDocumentArgs = {
+  input: ValidateDocumentInput;
 };
 
 /** TEST only. Allows empty signatures for testing. */
@@ -988,6 +994,19 @@ export type UserViewer = Viewer & {
   tenants: Array<Tenant>;
 };
 
+export type ValidateDocumentInput = {
+  pdf?: InputMaybe<Scalars['Blob']>;
+  xml?: InputMaybe<Scalars['Blob']>;
+};
+
+export type ValidateDocumentOutput = {
+  __typename?: 'ValidateDocumentOutput';
+  errors?: Maybe<Array<Scalars['String']>>;
+  /** Whether or not the errors are fixable using 'fixDocumentFormattingErrors' */
+  fixable?: Maybe<Scalars['Boolean']>;
+  valid: Scalars['Boolean'];
+};
+
 export type VerifyApplication = {
   __typename?: 'VerifyApplication';
   domain: Scalars['String'];
@@ -1175,6 +1194,13 @@ export type SignActingAsMutationVariables = Exact<{
 
 export type SignActingAsMutation = { __typename?: 'Mutation', signActingAs?: { __typename?: 'SignActingAsOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
 
+export type ValidateDocumentMutationVariables = Exact<{
+  input: ValidateDocumentInput;
+}>;
+
+
+export type ValidateDocumentMutation = { __typename?: 'Mutation', validateDocument?: { __typename?: 'ValidateDocumentOutput', valid: boolean, errors?: Array<string> | null, fixable?: boolean | null } | null };
+
 export type SignatureOrderQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -1356,6 +1382,15 @@ export const SignActingAsDocument = gql`
   }
 }
     ${BasicSignatoryFragmentDoc}`;
+export const ValidateDocumentDocument = gql`
+    mutation validateDocument($input: ValidateDocumentInput!) {
+  validateDocument(input: $input) {
+    valid
+    errors
+    fixable
+  }
+}
+    `;
 export const SignatureOrderDocument = gql`
     query signatureOrder($id: ID!) {
   signatureOrder(id: $id) {
@@ -1434,6 +1469,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     signActingAs(variables: SignActingAsMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<SignActingAsMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<SignActingAsMutation>(SignActingAsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'signActingAs', 'mutation');
+    },
+    validateDocument(variables: ValidateDocumentMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ValidateDocumentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ValidateDocumentMutation>(ValidateDocumentDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'validateDocument', 'mutation');
     },
     signatureOrder(variables: SignatureOrderQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<SignatureOrderQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SignatureOrderQuery>(SignatureOrderDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'signatureOrder', 'query');

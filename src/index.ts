@@ -95,6 +95,11 @@ export class CriiptoSignatures {
     return response.signActingAs!.signatory;
   }
 
+  async validateDocument(input: Types.ValidateDocumentInput) {
+    const response = await this.sdk.validateDocument({input});
+    return response.validateDocument!;
+  }
+
   async querySignatureOrder(signatureOrderId: string, includeDocuments: boolean = false) : Promise<null | NonNullable<Types.SignatureOrderWithDocumentsQuery["signatureOrder"]> | NonNullable<Types.SignatureOrderQuery["signatureOrder"]>> {
     const response = includeDocuments ? await this.sdk.signatureOrderWithDocuments({id: signatureOrderId}) : await this.sdk.signatureOrder({id: signatureOrderId});
     return response.signatureOrder ?? null;
