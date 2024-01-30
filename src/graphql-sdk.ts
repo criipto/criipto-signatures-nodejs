@@ -49,6 +49,16 @@ export type AddSignatoryOutput = {
   signatureOrder: SignatureOrder;
 };
 
+export type AllOfEvidenceProviderInput = {
+  providers: Array<SingleEvidenceProviderInput>;
+};
+
+export type AllOfSignatureEvidenceProvider = SignatureEvidenceProvider & {
+  __typename?: 'AllOfSignatureEvidenceProvider';
+  id: Scalars['ID'];
+  providers: Array<SingleSignatureEvidenceProvider>;
+};
+
 export type AnonymousViewer = Viewer & {
   __typename?: 'AnonymousViewer';
   authenticated: Scalars['Boolean'];
@@ -141,6 +151,11 @@ export type CloseSignatureOrderInput = {
 export type CloseSignatureOrderOutput = {
   __typename?: 'CloseSignatureOrderOutput';
   signatureOrder: SignatureOrder;
+};
+
+export type CompositeSignature = Signature & {
+  __typename?: 'CompositeSignature';
+  signatory?: Maybe<Signatory>;
 };
 
 export type CreateApplicationApiKeyInput = {
@@ -246,7 +261,7 @@ export type CriiptoVerifyProviderInput = {
   uniqueEvidenceKey?: InputMaybe<Scalars['String']>;
 };
 
-export type CriiptoVerifySignatureEvidenceProvider = SignatureEvidenceProvider & {
+export type CriiptoVerifySignatureEvidenceProvider = SignatureEvidenceProvider & SingleSignatureEvidenceProvider & {
   __typename?: 'CriiptoVerifySignatureEvidenceProvider';
   acrValues: Array<Scalars['String']>;
   alwaysRedirect: Scalars['Boolean'];
@@ -334,7 +349,7 @@ export type DrawableSignature = Signature & {
   signatory?: Maybe<Signatory>;
 };
 
-export type DrawableSignatureEvidenceProvider = SignatureEvidenceProvider & {
+export type DrawableSignatureEvidenceProvider = SignatureEvidenceProvider & SingleSignatureEvidenceProvider & {
   __typename?: 'DrawableSignatureEvidenceProvider';
   id: Scalars['ID'];
   requireName: Scalars['Boolean'];
@@ -345,8 +360,9 @@ export type EmptySignature = Signature & {
   signatory?: Maybe<Signatory>;
 };
 
-/** Must define either oidc or noop subsection. */
+/** Must define a evidence provider subsection. */
 export type EvidenceProviderInput = {
+  allOf?: InputMaybe<AllOfEvidenceProviderInput>;
   /** Criipto Verify based evidence for signatures. */
   criiptoVerify?: InputMaybe<CriiptoVerifyProviderInput>;
   /** Hand drawn signature evidence for signatures. */
@@ -544,7 +560,7 @@ export type NoopEvidenceProviderInput = {
   name: Scalars['String'];
 };
 
-export type NoopSignatureEvidenceProvider = SignatureEvidenceProvider & {
+export type NoopSignatureEvidenceProvider = SignatureEvidenceProvider & SingleSignatureEvidenceProvider & {
   __typename?: 'NoopSignatureEvidenceProvider';
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -562,7 +578,7 @@ export type OidcEvidenceProviderInput = {
   uniqueEvidenceKey?: InputMaybe<Scalars['String']>;
 };
 
-export type OidcJwtSignatureEvidenceProvider = SignatureEvidenceProvider & {
+export type OidcJwtSignatureEvidenceProvider = SignatureEvidenceProvider & SingleSignatureEvidenceProvider & {
   __typename?: 'OidcJWTSignatureEvidenceProvider';
   acrValues: Array<Scalars['String']>;
   alwaysRedirect: Scalars['Boolean'];
@@ -693,6 +709,13 @@ export type SignActingAsOutput = {
   signatureOrder: SignatureOrder;
 };
 
+export type SignAllOfInput = {
+  criiptoVerify?: InputMaybe<SignCriiptoVerifyInput>;
+  drawable?: InputMaybe<SignDrawableInput>;
+  noop?: InputMaybe<Scalars['Boolean']>;
+  oidc?: InputMaybe<SignOidcInput>;
+};
+
 export type SignCriiptoVerifyInput = {
   jwt: Scalars['String'];
 };
@@ -703,6 +726,7 @@ export type SignDrawableInput = {
 };
 
 export type SignInput = {
+  allOf?: InputMaybe<SignAllOfInput>;
   criiptoVerify?: InputMaybe<SignCriiptoVerifyInput>;
   drawable?: InputMaybe<SignDrawableInput>;
   /** EvidenceProvider id */
@@ -933,6 +957,22 @@ export type SignatureOrderWebhookLogsArgs = {
   to: Scalars['String'];
 };
 
+/** Must define a evidence provider subsection. */
+export type SingleEvidenceProviderInput = {
+  /** Criipto Verify based evidence for signatures. */
+  criiptoVerify?: InputMaybe<CriiptoVerifyProviderInput>;
+  /** Hand drawn signature evidence for signatures. */
+  drawable?: InputMaybe<DrawableEvidenceProviderInput>;
+  /** TEST environment only. Does not manipulate the PDF, use for integration or webhook testing. */
+  noop?: InputMaybe<NoopEvidenceProviderInput>;
+  /** OIDC/JWT based evidence for signatures. */
+  oidc?: InputMaybe<OidcEvidenceProviderInput>;
+};
+
+export type SingleSignatureEvidenceProvider = {
+  id: Scalars['ID'];
+};
+
 export type Tenant = {
   __typename?: 'Tenant';
   applications: Array<Application>;
@@ -1128,71 +1168,71 @@ type BasicDocument_XmlDocument_Fragment = { __typename: 'XmlDocument', id: strin
 
 export type BasicDocumentFragment = BasicDocument_PdfDocument_Fragment | BasicDocument_XmlDocument_Fragment;
 
-type SignedDocument_PdfDocument_Fragment = { __typename?: 'PdfDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null };
+type SignedDocument_PdfDocument_Fragment = { __typename?: 'PdfDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'CompositeSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null };
 
-type SignedDocument_XmlDocument_Fragment = { __typename?: 'XmlDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null };
+type SignedDocument_XmlDocument_Fragment = { __typename?: 'XmlDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'CompositeSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null };
 
 export type SignedDocumentFragment = SignedDocument_PdfDocument_Fragment | SignedDocument_XmlDocument_Fragment;
 
-export type BasicSignatoryFragment = { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } };
+export type BasicSignatoryFragment = { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } };
 
-export type BasicSignatureOrderFragment = { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> };
+export type BasicSignatureOrderFragment = { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> };
 
 export type CreateSignatureOrderMutationVariables = Exact<{
   input: CreateSignatureOrderInput;
 }>;
 
 
-export type CreateSignatureOrderMutation = { __typename?: 'Mutation', createSignatureOrder?: { __typename?: 'CreateSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string } | { __typename: 'XmlDocument', id: string, title: string }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
+export type CreateSignatureOrderMutation = { __typename?: 'Mutation', createSignatureOrder?: { __typename?: 'CreateSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string } | { __typename: 'XmlDocument', id: string, title: string }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
 
 export type CleanupSignatureOrderMutationVariables = Exact<{
   input: CleanupSignatureOrderInput;
 }>;
 
 
-export type CleanupSignatureOrderMutation = { __typename?: 'Mutation', cleanupSignatureOrder?: { __typename?: 'CleanupSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string } | { __typename: 'XmlDocument', id: string, title: string }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
+export type CleanupSignatureOrderMutation = { __typename?: 'Mutation', cleanupSignatureOrder?: { __typename?: 'CleanupSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string } | { __typename: 'XmlDocument', id: string, title: string }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
 
 export type AddSignatoryMutationVariables = Exact<{
   input: AddSignatoryInput;
 }>;
 
 
-export type AddSignatoryMutation = { __typename?: 'Mutation', addSignatory?: { __typename?: 'AddSignatoryOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
+export type AddSignatoryMutation = { __typename?: 'Mutation', addSignatory?: { __typename?: 'AddSignatoryOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
 
 export type AddSignatoriesMutationVariables = Exact<{
   input: AddSignatoriesInput;
 }>;
 
 
-export type AddSignatoriesMutation = { __typename?: 'Mutation', addSignatories?: { __typename?: 'AddSignatoriesOutput', signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }> } | null };
+export type AddSignatoriesMutation = { __typename?: 'Mutation', addSignatories?: { __typename?: 'AddSignatoriesOutput', signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }> } | null };
 
 export type ChangeSignatoryMutationVariables = Exact<{
   input: ChangeSignatoryInput;
 }>;
 
 
-export type ChangeSignatoryMutation = { __typename?: 'Mutation', changeSignatory?: { __typename?: 'ChangeSignatoryOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
+export type ChangeSignatoryMutation = { __typename?: 'Mutation', changeSignatory?: { __typename?: 'ChangeSignatoryOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
 
 export type CloseSignatureOrderMutationVariables = Exact<{
   input: CloseSignatureOrderInput;
 }>;
 
 
-export type CloseSignatureOrderMutation = { __typename?: 'Mutation', closeSignatureOrder?: { __typename?: 'CloseSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null } | { __typename: 'XmlDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
+export type CloseSignatureOrderMutation = { __typename?: 'Mutation', closeSignatureOrder?: { __typename?: 'CloseSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'CompositeSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null } | { __typename: 'XmlDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'CompositeSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
 
 export type CancelSignatureOrderMutationVariables = Exact<{
   input: CancelSignatureOrderInput;
 }>;
 
 
-export type CancelSignatureOrderMutation = { __typename?: 'Mutation', cancelSignatureOrder?: { __typename?: 'CancelSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string } | { __typename: 'XmlDocument', id: string, title: string }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
+export type CancelSignatureOrderMutation = { __typename?: 'Mutation', cancelSignatureOrder?: { __typename?: 'CancelSignatureOrderOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string } | { __typename: 'XmlDocument', id: string, title: string }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
 
 export type SignActingAsMutationVariables = Exact<{
   input: SignActingAsInput;
 }>;
 
 
-export type SignActingAsMutation = { __typename?: 'Mutation', signActingAs?: { __typename?: 'SignActingAsOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
+export type SignActingAsMutation = { __typename?: 'Mutation', signActingAs?: { __typename?: 'SignActingAsOutput', signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } } | null };
 
 export type ValidateDocumentMutationVariables = Exact<{
   input: ValidateDocumentInput;
@@ -1206,21 +1246,21 @@ export type SignatureOrderQueryVariables = Exact<{
 }>;
 
 
-export type SignatureOrderQuery = { __typename?: 'Query', signatureOrder?: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } | null };
+export type SignatureOrderQuery = { __typename?: 'Query', signatureOrder?: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } | null };
 
 export type SignatureOrderWithDocumentsQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type SignatureOrderWithDocumentsQuery = { __typename?: 'Query', signatureOrder?: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null } | { __typename: 'XmlDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } | null };
+export type SignatureOrderWithDocumentsQuery = { __typename?: 'Query', signatureOrder?: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, documents: Array<{ __typename: 'PdfDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'CompositeSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null } | { __typename: 'XmlDocument', id: string, title: string, blob?: Buffer | null, signatures?: Array<{ __typename: 'CompositeSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'DrawableSignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'EmptySignature', signatory?: { __typename?: 'Signatory', id: string } | null } | { __typename: 'JWTSignature', jwt: string, jwks: string, signatory?: { __typename?: 'Signatory', id: string } | null }> | null }>, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } | null };
 
 export type SignatoryQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type SignatoryQuery = { __typename?: 'Query', signatory?: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> }, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } | null };
+export type SignatoryQuery = { __typename?: 'Query', signatory?: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } | null };
 
 export type SignatureOrdersQueryVariables = Exact<{
   status?: InputMaybe<SignatureOrderStatus>;
@@ -1229,7 +1269,7 @@ export type SignatureOrdersQueryVariables = Exact<{
 }>;
 
 
-export type SignatureOrdersQuery = { __typename?: 'Query', viewer: { __typename: 'AnonymousViewer' } | { __typename: 'Application', signatureOrders: { __typename?: 'SignatureOrderConnection', edges: Array<{ __typename?: 'SignatureOrderEdge', node: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } }> } } | { __typename: 'SignatoryViewer' } | { __typename: 'UnvalidatedSignatoryViewer' } | { __typename: 'UserViewer' } };
+export type SignatureOrdersQuery = { __typename?: 'Query', viewer: { __typename: 'AnonymousViewer' } | { __typename: 'Application', signatureOrders: { __typename?: 'SignatureOrderConnection', edges: Array<{ __typename?: 'SignatureOrderEdge', node: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } }> } } | { __typename: 'SignatoryViewer' } | { __typename: 'UnvalidatedSignatoryViewer' } | { __typename: 'UserViewer' } };
 
 export const BasicDocumentFragmentDoc = gql`
     fragment BasicDocument on Document {
