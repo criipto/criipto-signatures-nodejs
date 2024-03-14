@@ -2,6 +2,12 @@ fragment BasicDocument on Document {
   __typename
   id
   title
+
+  ... on PdfDocument {
+    form {
+      enabled
+    }
+  }
 }
 fragment SignedDocument on Document {
   id
