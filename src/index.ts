@@ -95,6 +95,16 @@ export class CriiptoSignatures {
     return response.signActingAs!.signatory;
   }
 
+  async deleteSignatory(signatureOrderId: string, signatoryId: string) {
+    const response = await this.sdk.deleteSignatory({
+      input: {
+        signatureOrderId,
+        signatoryId
+      }
+    });
+    return response.deleteSignatory!.signatureOrder;
+  }
+
   async validateDocument(input: Types.ValidateDocumentInput) {
     const response = await this.sdk.validateDocument({input});
     return response.validateDocument!;
