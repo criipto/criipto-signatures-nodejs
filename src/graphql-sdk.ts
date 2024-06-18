@@ -156,6 +156,7 @@ export type CloseSignatureOrderOutput = {
 export type CompositeSignature = Signature & {
   __typename?: 'CompositeSignature';
   signatory?: Maybe<Signatory>;
+  signatures: Array<SingleSignature>;
 };
 
 export type CreateApplicationApiKeyInput = {
@@ -257,6 +258,8 @@ export type CriiptoVerifyProviderInput = {
   loginHint?: InputMaybe<Scalars['String']>;
   /** Messages displayed when performing authentication (only supported by DKMitID currently). */
   message?: InputMaybe<Scalars['String']>;
+  /** Set a custom scope for the underlying authentication request. */
+  scope?: InputMaybe<Scalars['String']>;
   /** Enforces that signatories sign by unique evidence by comparing the values of previous evidence on the key you define. For Criipto Verify you likely want to use `sub` which is a unique pseudonym value present in all e-ID tokens issued. */
   uniqueEvidenceKey?: InputMaybe<Scalars['String']>;
 };
@@ -271,6 +274,7 @@ export type CriiptoVerifySignatureEvidenceProvider = SignatureEvidenceProvider &
   loginHint?: Maybe<Scalars['String']>;
   message?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  scope?: Maybe<Scalars['String']>;
 };
 
 export type DeleteApplicationApiKeyInput = {
@@ -342,7 +346,7 @@ export type DrawableEvidenceProviderInput = {
   requireName?: InputMaybe<Scalars['Boolean']>;
 };
 
-export type DrawableSignature = Signature & {
+export type DrawableSignature = Signature & SingleSignature & {
   __typename?: 'DrawableSignature';
   image: Scalars['Blob'];
   name?: Maybe<Scalars['String']>;
@@ -355,7 +359,7 @@ export type DrawableSignatureEvidenceProvider = SignatureEvidenceProvider & Sing
   requireName: Scalars['Boolean'];
 };
 
-export type EmptySignature = Signature & {
+export type EmptySignature = Signature & SingleSignature & {
   __typename?: 'EmptySignature';
   signatory?: Maybe<Signatory>;
 };
@@ -392,7 +396,7 @@ export type ExtendSignatureOrderOutput = {
   signatureOrder: SignatureOrder;
 };
 
-export type JwtSignature = Signature & {
+export type JwtSignature = Signature & SingleSignature & {
   __typename?: 'JWTSignature';
   jwks: Scalars['String'];
   jwt: Scalars['String'];
@@ -827,12 +831,22 @@ export type SignatoryDocumentStatus =
   | '%future added value';
 
 export type SignatoryEvidenceProviderInput = {
+  allOf?: InputMaybe<AllOfEvidenceProviderInput>;
+  /** Criipto Verify based evidence for signatures. */
+  criiptoVerify?: InputMaybe<CriiptoVerifyProviderInput>;
+  /** Hand drawn signature evidence for signatures. */
+  drawable?: InputMaybe<DrawableEvidenceProviderInput>;
   id: Scalars['ID'];
+  /** TEST environment only. Does not manipulate the PDF, use for integration or webhook testing. */
+  noop?: InputMaybe<NoopEvidenceProviderInput>;
+  /** OIDC/JWT based evidence for signatures. */
+  oidc?: InputMaybe<OidcEvidenceProviderInput>;
 };
 
 export type SignatoryEvidenceValidationInput = {
+  boolean?: InputMaybe<Scalars['Boolean']>;
   key: Scalars['String'];
-  value: Scalars['String'];
+  value?: InputMaybe<Scalars['String']>;
 };
 
 export type SignatoryFrontendEvent =
@@ -993,6 +1007,10 @@ export type SingleEvidenceProviderInput = {
   noop?: InputMaybe<NoopEvidenceProviderInput>;
   /** OIDC/JWT based evidence for signatures. */
   oidc?: InputMaybe<OidcEvidenceProviderInput>;
+};
+
+export type SingleSignature = {
+  signatory?: Maybe<Signatory>;
 };
 
 export type SingleSignatureEvidenceProvider = {
