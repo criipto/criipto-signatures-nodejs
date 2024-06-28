@@ -179,10 +179,10 @@ query signatureOrderWithDocuments($id: ID!) {
 
 query signatory($id: ID!) {
   signatory(id: $id) {
-    ...BasicSignatory
     signatureOrder {
       ...BasicSignatureOrder
     }
+    ...BasicSignatory
   }
 }
 

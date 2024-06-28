@@ -1522,14 +1522,14 @@ ${SignedDocumentFragmentDoc}`;
 export const SignatoryDocument = gql`
     query signatory($id: ID!) {
   signatory(id: $id) {
-    ...BasicSignatory
     signatureOrder {
       ...BasicSignatureOrder
     }
+    ...BasicSignatory
   }
 }
-    ${BasicSignatoryFragmentDoc}
-${BasicSignatureOrderFragmentDoc}`;
+    ${BasicSignatureOrderFragmentDoc}
+${BasicSignatoryFragmentDoc}`;
 export const SignatureOrdersDocument = gql`
     query signatureOrders($status: SignatureOrderStatus, $first: Int!, $after: String) {
   viewer {
