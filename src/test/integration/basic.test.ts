@@ -2,9 +2,28 @@ import test from 'ava';
 import fs from 'fs';
 
 import CriiptoSignatures from '../../';
+import { DocumentStorageMode } from '../../graphql-sdk';
 
 const sample = fs.readFileSync(__dirname + '/sample.pdf');
 const sampleForm = fs.readFileSync(__dirname + '/sample-form.pdf');
+
+const documentFixture = {
+  pdf: {
+    title: "Node.js Sample",
+    blob: sample, // Buffer
+    storageMode: <DocumentStorageMode>'Temporary'
+  }
+};
+
+function arrange() {
+  const client = new CriiptoSignatures(
+    process.env.CRIIPTO_SIGNATURES_CLIENT_ID!,
+    process.env.CRIIPTO_SIGNATURES_CLIENT_SECRET!
+  );
+  client.client.setHeader('Criipto-Sdk', 'test');
+
+  return {client};
+}
 
 test('client credentials', t => {
 	t.truthy(process.env.CRIIPTO_SIGNATURES_CLIENT_ID);
@@ -13,25 +32,13 @@ test('client credentials', t => {
 
 test('can create signature order with signatory', async t => {
   // ARRANGE
-  const client = new CriiptoSignatures(
-    process.env.CRIIPTO_SIGNATURES_CLIENT_ID!,
-    process.env.CRIIPTO_SIGNATURES_CLIENT_SECRET!
-  );
-  client.client.setHeader('Criipto-Sdk', 'test');
+  const {client} = arrange();
 
   // ACT
   const signatureOrder = await client.createSignatureOrder({
     title: "Node.js sample",
     expiresInDays: 1,
-    documents: [
-      {
-        pdf: {
-          title: "Node.js Sample",
-          blob: sample, // Buffer
-          storageMode: 'Temporary'
-        }
-      }
-    ]
+    documents: [documentFixture]
   });
 
   t.truthy(signatureOrder);
@@ -52,11 +59,7 @@ test('can create signature order with signatory', async t => {
 
 test('can create signature order with form enabled', async t => {
   // ARRANGE
-  const client = new CriiptoSignatures(
-    process.env.CRIIPTO_SIGNATURES_CLIENT_ID!,
-    process.env.CRIIPTO_SIGNATURES_CLIENT_SECRET!
-  );
-  client.client.setHeader('Criipto-Sdk', 'test');
+  const {client} = arrange();
 
   // ACT
   const signatureOrder = await client.createSignatureOrder({
@@ -89,4 +92,21 @@ test('can create signature order with form enabled', async t => {
   if (fetched.documents[0].__typename !== 'PdfDocument') return t.fail("expected PdfDocument");
 
   t.truthy(fetched.documents[0].form?.enabled);
+});
+
+test('can query signatory.signatureOrder.signatories (regression test)', async t => {
+  // ARRANGE
+  const {client} = arrange();
+  const signatureOrder = await client.createSignatureOrder({
+    title: "Node.js sample",
+    expiresInDays: 1,
+    documents: [documentFixture]
+  });
+  const {id: signatoryId} = await client.addSignatory(signatureOrder!.id);
+
+  // ACT
+  const signatory = await client.querySignatory(signatoryId);
+
+  // ASSERT
+  t.truthy(signatory?.signatureOrder.signatories);
 });
