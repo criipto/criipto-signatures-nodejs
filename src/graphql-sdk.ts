@@ -31,6 +31,7 @@ export type AddSignatoriesOutput = {
 };
 
 export type AddSignatoryInput = {
+  /** Define a subset of documents for the signatory. Must be a non-empty list. Leave null for all documents. */
   documents?: InputMaybe<Array<SignatoryDocumentInput>>;
   /** Selectively enable evidence providers for this signatory. */
   evidenceProviders?: InputMaybe<Array<SignatoryEvidenceProviderInput>>;
@@ -115,6 +116,7 @@ export type CancelSignatureOrderOutput = {
 };
 
 export type ChangeSignatoryInput = {
+  /** Define a subset of documents for the signatory. Must be a non-empty list. Leave null for all documents. */
   documents?: InputMaybe<Array<SignatoryDocumentInput>>;
   /** Selectively enable evidence providers for this signatory. */
   evidenceProviders?: InputMaybe<Array<SignatoryEvidenceProviderInput>>;
@@ -194,7 +196,9 @@ export type CreateSignatureOrderInput = {
   evidenceProviders?: InputMaybe<Array<EvidenceProviderInput>>;
   /** Defines when a signatory must be validated, default is when signing, but can be expanded to also be required when viewing documents. */
   evidenceValidationStages?: InputMaybe<Array<EvidenceValidationStage>>;
-  /** When this signature order will auto-close/expire. Default 90 days. */
+  /** When this signature order will auto-close/expire at exactly in one of the following ISO-8601 formats: yyyy-MM-ddTHH:mm:ssZ, yyyy-MM-ddTHH:mm:ss.ffZ, yyyy-MM-ddTHH:mm:ss.fffZ, yyyy-MM-ddTHH:mm:ssK, yyyy-MM-ddTHH:mm:ss.ffK, yyyy-MM-ddTHH:mm:ss.fffK. Cannot be provided with `expiresInDays`. */
+  expiresAt?: InputMaybe<Scalars['String']>;
+  /** When this signature order will auto-close/expire. Default 90 days. Cannot be provided with `expiresAt` */
   expiresInDays?: InputMaybe<Scalars['Int']>;
   /** Attempt to automatically fix document formatting errors if possible. Default 'true'. */
   fixDocumentFormattingErrors?: InputMaybe<Scalars['Boolean']>;
@@ -219,6 +223,7 @@ export type CreateSignatureOrderOutput = {
 };
 
 export type CreateSignatureOrderSignatoryInput = {
+  /** Define a subset of documents for the signatory. Must be a non-empty list. Leave null for all documents. */
   documents?: InputMaybe<Array<SignatoryDocumentInput>>;
   /** Selectively enable evidence providers for this signatory. */
   evidenceProviders?: InputMaybe<Array<SignatoryEvidenceProviderInput>>;
@@ -343,6 +348,10 @@ export type DownloadVerificationOidcInput = {
 
 /** Hand drawn signature evidence for signatures. */
 export type DrawableEvidenceProviderInput = {
+  /** Required minimum height of drawed area in pixels. */
+  minimumHeight?: InputMaybe<Scalars['Int']>;
+  /** Required minimum width of drawed area in pixels. */
+  minimumWidth?: InputMaybe<Scalars['Int']>;
   requireName?: InputMaybe<Scalars['Boolean']>;
 };
 
@@ -356,6 +365,8 @@ export type DrawableSignature = Signature & SingleSignature & {
 export type DrawableSignatureEvidenceProvider = SignatureEvidenceProvider & SingleSignatureEvidenceProvider & {
   __typename?: 'DrawableSignatureEvidenceProvider';
   id: Scalars['ID'];
+  minimumHeight?: Maybe<Scalars['Int']>;
+  minimumWidth?: Maybe<Scalars['Int']>;
   requireName: Scalars['Boolean'];
 };
 
@@ -896,6 +907,7 @@ export type Signature = {
 
 export type SignatureAppearanceInput = {
   displayName?: InputMaybe<Array<SignatureAppearanceTemplateInput>>;
+  footer?: InputMaybe<Array<SignatureAppearanceTemplateInput>>;
   headerLeft?: InputMaybe<Array<SignatureAppearanceTemplateInput>>;
   /** Render evidence claim as identifier in the signature appearance inside the document. You can supply multiple keys and they will be tried in order. If no key is found a GUID will be rendered. */
   identifierFromEvidence: Array<Scalars['String']>;
