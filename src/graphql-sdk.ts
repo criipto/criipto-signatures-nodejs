@@ -242,6 +242,8 @@ export type CreateSignatureOrderUiInput = {
   language?: InputMaybe<Language>;
   /** Define a logo to be shown in the signatory UI. */
   logo?: InputMaybe<SignatureOrderUiLogoInput>;
+  /** Renders a UI layer for PDF annotations, such as links, making them interactive in the UI/browser */
+  renderPdfAnnotationLayer?: InputMaybe<Scalars['Boolean']>;
   /** The signatory will be redirected to this URL after signing or rejected the signature order. */
   signatoryRedirectUri?: InputMaybe<Scalars['String']>;
   /** Add stylesheet/css via an absolute HTTPS URL. */
@@ -979,6 +981,7 @@ export type SignatureOrderUi = {
   disableRejection: Scalars['Boolean'];
   language: Language;
   logo?: Maybe<SignatureOrderUiLogo>;
+  renderPdfAnnotationLayer: Scalars['Boolean'];
   signatoryRedirectUri?: Maybe<Scalars['String']>;
   stylesheet?: Maybe<Scalars['String']>;
 };
