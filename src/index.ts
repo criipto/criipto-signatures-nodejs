@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
-import { AddSignatoriesInput, AddSignatoryInput, ChangeSignatoryInput, CloseSignatureOrderInput, CreateSignatureOrderInput, getSdk, Sdk, SignActingAsInput } from './graphql-sdk';
+import { AddSignatoriesInput, AddSignatoryInput, ChangeSignatoryInput, CloseSignatureOrderInput, CreateSignatureOrderInput, CreateBatchSignatoryInput, getSdk, Sdk, SignActingAsInput } from './graphql-sdk';
 
 import  * as Types from './graphql-sdk';
 import jsonSerializer from './json-serializer';
@@ -8,7 +8,7 @@ export {Types as CriiptoSignaturesTypes};
 export class CriiptoSignatures {
   client: GraphQLClient;
   sdk: Sdk;
- 
+
   constructor(clientId: string, clientSecret: string) {
     this.client = new GraphQLClient('https://signatures-api.criipto.com/v1/graphql', {
       headers: {
@@ -105,6 +105,13 @@ export class CriiptoSignatures {
     return response.deleteSignatory!.signatureOrder;
   }
 
+  async createBatchSignatory(input: CreateBatchSignatoryInput) {
+    const response = await this.sdk.createBatchSignatory({
+      input: input
+    });
+    return response.createBatchSignatory!.batchSignatory;
+  }
+
   async validateDocument(input: Types.ValidateDocumentInput) {
     const response = await this.sdk.validateDocument({input});
     return response.validateDocument!;
@@ -133,6 +140,11 @@ export class CriiptoSignatures {
 
     if (response.viewer.__typename !== 'Application') throw new Error('Unexpected viewer type');
     return response.viewer.signatureOrders.edges.map(e => e.node);
+  }
+
+  async queryBatchSignatory(batchSignatoryId: string) {
+    const response = await this.sdk.batchSignatory({id: batchSignatoryId});
+    return response.batchSignatory ?? null;
   }
 }
 

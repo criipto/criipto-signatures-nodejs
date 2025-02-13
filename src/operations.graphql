@@ -67,6 +67,12 @@ fragment BasicSignatureOrder on SignatureOrder {
   }
 }
 
+fragment BasicBatchSignatory on BatchSignatory {
+  id
+  token
+  href
+}
+
 mutation createSignatureOrder($input: CreateSignatureOrderInput!) {
   createSignatureOrder(input: $input) {
     signatureOrder {
@@ -160,6 +166,24 @@ mutation deleteSignatory($input: DeleteSignatoryInput!) {
   }
 }
 
+mutation createBatchSignatory($input: CreateBatchSignatoryInput!) {
+  createBatchSignatory(input: $input) {
+    batchSignatory {
+      ...BasicBatchSignatory
+
+      items {
+        signatureOrder {
+          ...BasicSignatureOrder
+        }
+
+        signatory {
+          ...BasicSignatory
+        }
+      }
+    }
+  }
+}
+
 query signatureOrder($id: ID!) {
   signatureOrder(id: $id) {
     ... BasicSignatureOrder
@@ -196,6 +220,22 @@ query signatureOrders($status: SignatureOrderStatus, $first: Int!, $after: Strin
             ... BasicSignatureOrder
           }
         }
+      }
+    }
+  }
+}
+
+query batchSignatory($id: ID!) {
+  batchSignatory(id: $id) {
+    ...BasicBatchSignatory
+
+    items {
+      signatureOrder {
+        ...BasicSignatureOrder
+      }
+
+      signatory {
+        ...BasicSignatory
       }
     }
   }

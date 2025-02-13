@@ -85,7 +85,7 @@ test('can create signature order with form enabled', async t => {
   const fetched = await client.querySignatureOrder(signatureOrder!.id, true);
   t.truthy(fetched);
   t.truthy(fetched!.id);
-  
+
   if (!fetched) return t.fail("expected fetched")
   if (!("documents" in fetched)) return t.fail("expected documents");
   if (!fetched.documents[0]) return t.fail("expected non-empty documents");
@@ -110,3 +110,45 @@ test('can query signatory.signatureOrder.signatories (regression test)', async t
   // ASSERT
   t.truthy(signatory?.signatureOrder.signatories);
 });
+
+test('can create batch signatory', async t => {
+  // ARRANGE
+  const {client} = arrange();
+  const signatureOrderA = await client.createSignatureOrder({
+    title: "Node.js BatchSignatory A sample",
+    expiresInDays: 1,
+    documents: [documentFixture]
+  });
+  const {id: signatoryIdA} = await client.addSignatory(signatureOrderA!.id);
+
+  const signatureOrderB = await client.createSignatureOrder({
+    title: "Node.js BatchSignatory B sample",
+    expiresInDays: 1,
+    documents: [documentFixture]
+  });
+  const {id: signatoryIdB} = await client.addSignatory(signatureOrderB!.id);
+
+  let batchSignatoryItems = [
+    { signatoryId: signatoryIdA, signatureOrderId: signatureOrderA!.id },
+    { signatoryId: signatoryIdB, signatureOrderId: signatureOrderB!.id },
+  ];
+
+  // ACT
+  const batchSignatory = await client.createBatchSignatory({
+    items: batchSignatoryItems
+  });
+
+  // ASSERT
+  const actualItems =
+    batchSignatory?.items.map(i => {
+      return { signatoryId: i.signatory.id, signatureOrderId: i.signatureOrder.id }
+    }).sort();
+
+  const expectedItems = [...batchSignatoryItems].sort();
+
+  t.truthy(actualItems.length === expectedItems.length);
+  t.truthy(actualItems.every((elem, idx) =>
+    elem.signatoryId === expectedItems[idx].signatoryId &&
+    elem.signatureOrderId === expectedItems[idx].signatureOrderId)
+  );
+})
