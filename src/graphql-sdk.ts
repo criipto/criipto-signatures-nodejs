@@ -1319,6 +1319,8 @@ export type BasicSignatoryFragment = { __typename?: 'Signatory', id: string, sta
 
 export type BasicSignatureOrderFragment = { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> };
 
+export type BasicBatchSignatoryFragment = { __typename?: 'BatchSignatory', id: string, token: string, href: string };
+
 export type CreateSignatureOrderMutationVariables = Exact<{
   input: CreateSignatureOrderInput;
 }>;
@@ -1389,6 +1391,13 @@ export type DeleteSignatoryMutationVariables = Exact<{
 
 export type DeleteSignatoryMutation = { __typename?: 'Mutation', deleteSignatory?: { __typename?: 'DeleteSignatoryOutput', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } } | null };
 
+export type CreateBatchSignatoryMutationVariables = Exact<{
+  input: CreateBatchSignatoryInput;
+}>;
+
+
+export type CreateBatchSignatoryMutation = { __typename?: 'Mutation', createBatchSignatory?: { __typename?: 'CreateBatchSignatoryOutput', batchSignatory: { __typename?: 'BatchSignatory', id: string, token: string, href: string, items: Array<{ __typename?: 'BatchSignatoryItem', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> }, signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } }> } } | null };
+
 export type SignatureOrderQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -1418,6 +1427,13 @@ export type SignatureOrdersQueryVariables = Exact<{
 
 
 export type SignatureOrdersQuery = { __typename?: 'Query', viewer: { __typename: 'AnonymousViewer' } | { __typename: 'Application', signatureOrders: { __typename?: 'SignatureOrderConnection', edges: Array<{ __typename?: 'SignatureOrderEdge', node: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } }> } } | { __typename: 'BatchSignatoryViewer' } | { __typename: 'SignatoryViewer' } | { __typename: 'UnvalidatedSignatoryViewer' } | { __typename: 'UserViewer' } };
+
+export type BatchSignatoryQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type BatchSignatoryQuery = { __typename?: 'Query', batchSignatory?: { __typename?: 'BatchSignatory', id: string, token: string, href: string, items: Array<{ __typename?: 'BatchSignatoryItem', signatureOrder: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> }, signatory: { __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } } }> } | null };
 
 export const BasicDocumentFragmentDoc = gql`
     fragment BasicDocument on Document {
@@ -1488,6 +1504,13 @@ export const BasicSignatureOrderFragmentDoc = gql`
   }
 }
     ${BasicSignatoryFragmentDoc}`;
+export const BasicBatchSignatoryFragmentDoc = gql`
+    fragment BasicBatchSignatory on BatchSignatory {
+  id
+  token
+  href
+}
+    `;
 export const CreateSignatureOrderDocument = gql`
     mutation createSignatureOrder($input: CreateSignatureOrderInput!) {
   createSignatureOrder(input: $input) {
@@ -1596,6 +1619,25 @@ export const DeleteSignatoryDocument = gql`
   }
 }
     ${BasicSignatureOrderFragmentDoc}`;
+export const CreateBatchSignatoryDocument = gql`
+    mutation createBatchSignatory($input: CreateBatchSignatoryInput!) {
+  createBatchSignatory(input: $input) {
+    batchSignatory {
+      ...BasicBatchSignatory
+      items {
+        signatureOrder {
+          ...BasicSignatureOrder
+        }
+        signatory {
+          ...BasicSignatory
+        }
+      }
+    }
+  }
+}
+    ${BasicBatchSignatoryFragmentDoc}
+${BasicSignatureOrderFragmentDoc}
+${BasicSignatoryFragmentDoc}`;
 export const SignatureOrderDocument = gql`
     query signatureOrder($id: ID!) {
   signatureOrder(id: $id) {
@@ -1643,6 +1685,23 @@ export const SignatureOrdersDocument = gql`
   }
 }
     ${BasicSignatureOrderFragmentDoc}`;
+export const BatchSignatoryDocument = gql`
+    query batchSignatory($id: ID!) {
+  batchSignatory(id: $id) {
+    ...BasicBatchSignatory
+    items {
+      signatureOrder {
+        ...BasicSignatureOrder
+      }
+      signatory {
+        ...BasicSignatory
+      }
+    }
+  }
+}
+    ${BasicBatchSignatoryFragmentDoc}
+${BasicSignatureOrderFragmentDoc}
+${BasicSignatoryFragmentDoc}`;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -1681,6 +1740,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     deleteSignatory(variables: DeleteSignatoryMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<DeleteSignatoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteSignatoryMutation>(DeleteSignatoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteSignatory', 'mutation');
     },
+    createBatchSignatory(variables: CreateBatchSignatoryMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CreateBatchSignatoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateBatchSignatoryMutation>(CreateBatchSignatoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'createBatchSignatory', 'mutation');
+    },
     signatureOrder(variables: SignatureOrderQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<SignatureOrderQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SignatureOrderQuery>(SignatureOrderDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'signatureOrder', 'query');
     },
@@ -1692,6 +1754,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     signatureOrders(variables: SignatureOrdersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<SignatureOrdersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SignatureOrdersQuery>(SignatureOrdersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'signatureOrders', 'query');
+    },
+    batchSignatory(variables: BatchSignatoryQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<BatchSignatoryQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BatchSignatoryQuery>(BatchSignatoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'batchSignatory', 'query');
     }
   };
 }
