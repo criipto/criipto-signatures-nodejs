@@ -108,6 +108,39 @@ export type ApplicationApiKeyMode =
   | 'READ_WRITE'
   | '%future added value';
 
+export type BatchSignatory = {
+  __typename?: 'BatchSignatory';
+  href: Scalars['String'];
+  id: Scalars['ID'];
+  items: Array<BatchSignatoryItem>;
+  /** The authentication token required for performing batch operations. */
+  token: Scalars['String'];
+  ui: SignatureOrderUi;
+};
+
+export type BatchSignatoryItem = {
+  __typename?: 'BatchSignatoryItem';
+  signatory: Signatory;
+  signatureOrder: SignatureOrder;
+};
+
+export type BatchSignatoryItemInput = {
+  signatoryId: Scalars['String'];
+  signatureOrderId: Scalars['String'];
+};
+
+export type BatchSignatoryViewer = Viewer & {
+  __typename?: 'BatchSignatoryViewer';
+  authenticated: Scalars['Boolean'];
+  batchSignatoryId: Scalars['ID'];
+  documents: SignatoryDocumentConnection;
+  evidenceProviders: Array<SignatureEvidenceProvider>;
+  id: Scalars['ID'];
+  signer: Scalars['Boolean'];
+  status: SignatoryStatus;
+  ui: SignatureOrderUi;
+};
+
 export type CancelSignatureOrderInput = {
   signatureOrderId: Scalars['ID'];
 };
@@ -190,6 +223,17 @@ export type CreateApplicationOutput = {
   apiKey: ApplicationApiKey;
   application: Application;
   tenant: Tenant;
+};
+
+export type CreateBatchSignatoryInput = {
+  items: Array<BatchSignatoryItemInput>;
+  /** UI settings for batch signatory, will use defaults otherwise (will not use UI settings from sub signatories) */
+  ui?: InputMaybe<SignatoryUiInput>;
+};
+
+export type CreateBatchSignatoryOutput = {
+  __typename?: 'CreateBatchSignatoryOutput';
+  batchSignatory: BatchSignatory;
 };
 
 export type CreateSignatureOrderInput = {
@@ -396,7 +440,7 @@ export type EvidenceProviderInput = {
   enabledByDefault?: InputMaybe<Scalars['Boolean']>;
   /** TEST environment only. Does not manipulate the PDF, use for integration or webhook testing. */
   noop?: InputMaybe<NoopEvidenceProviderInput>;
-  /** OIDC/JWT based evidence for signatures. */
+  /** Deprecated */
   oidc?: InputMaybe<OidcEvidenceProviderInput>;
 };
 
@@ -449,6 +493,7 @@ export type Mutation = {
   createApplication?: Maybe<CreateApplicationOutput>;
   /** Creates a new set of api credentials for an existing application. */
   createApplicationApiKey?: Maybe<CreateApplicationApiKeyOutput>;
+  createBatchSignatory?: Maybe<CreateBatchSignatoryOutput>;
   /** Creates a signature order to be signed. */
   createSignatureOrder?: Maybe<CreateSignatureOrderOutput>;
   /** Deletes a set of API credentials for an application. */
@@ -513,6 +558,11 @@ export type MutationCreateApplicationArgs = {
 
 export type MutationCreateApplicationApiKeyArgs = {
   input: CreateApplicationApiKeyInput;
+};
+
+
+export type MutationCreateBatchSignatoryArgs = {
+  input: CreateBatchSignatoryInput;
 };
 
 
@@ -644,6 +694,8 @@ export type PageInfo = {
 export type PdfDocument = Document & {
   __typename?: 'PdfDocument';
   blob?: Maybe<Scalars['Blob']>;
+  /** Same value as stamped on document when using displayDocumentID */
+  documentID: Scalars['String'];
   form?: Maybe<PdfDocumentForm>;
   id: Scalars['ID'];
   originalBlob?: Maybe<Scalars['Blob']>;
@@ -667,6 +719,7 @@ export type PdfSealPosition = {
 export type Query = {
   __typename?: 'Query';
   application?: Maybe<Application>;
+  batchSignatory?: Maybe<BatchSignatory>;
   document?: Maybe<Document>;
   /** Query a signatory by id. Useful when using webhooks. */
   signatory?: Maybe<Signatory>;
@@ -681,6 +734,11 @@ export type Query = {
 export type QueryApplicationArgs = {
   id?: InputMaybe<Scalars['ID']>;
   verifyApplication?: InputMaybe<VerifyApplicationQueryInput>;
+};
+
+
+export type QueryBatchSignatoryArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -861,7 +919,7 @@ export type SignatoryEvidenceProviderInput = {
   id: Scalars['ID'];
   /** TEST environment only. Does not manipulate the PDF, use for integration or webhook testing. */
   noop?: InputMaybe<NoopEvidenceProviderInput>;
-  /** OIDC/JWT based evidence for signatures. */
+  /** Deprecated */
   oidc?: InputMaybe<OidcEvidenceProviderInput>;
 };
 
@@ -1044,7 +1102,7 @@ export type SingleEvidenceProviderInput = {
   drawable?: InputMaybe<DrawableEvidenceProviderInput>;
   /** TEST environment only. Does not manipulate the PDF, use for integration or webhook testing. */
   noop?: InputMaybe<NoopEvidenceProviderInput>;
-  /** OIDC/JWT based evidence for signatures. */
+  /** Deprecated */
   oidc?: InputMaybe<OidcEvidenceProviderInput>;
 };
 
@@ -1359,7 +1417,7 @@ export type SignatureOrdersQueryVariables = Exact<{
 }>;
 
 
-export type SignatureOrdersQuery = { __typename?: 'Query', viewer: { __typename: 'AnonymousViewer' } | { __typename: 'Application', signatureOrders: { __typename?: 'SignatureOrderConnection', edges: Array<{ __typename?: 'SignatureOrderEdge', node: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } }> } } | { __typename: 'SignatoryViewer' } | { __typename: 'UnvalidatedSignatoryViewer' } | { __typename: 'UserViewer' } };
+export type SignatureOrdersQuery = { __typename?: 'Query', viewer: { __typename: 'AnonymousViewer' } | { __typename: 'Application', signatureOrders: { __typename?: 'SignatureOrderConnection', edges: Array<{ __typename?: 'SignatureOrderEdge', node: { __typename?: 'SignatureOrder', id: string, status: SignatureOrderStatus, title?: string | null, signatories: Array<{ __typename?: 'Signatory', id: string, status: SignatoryStatus, href: string, downloadHref?: string | null, reference?: string | null, role?: string | null, signatureOrder: { __typename?: 'SignatureOrder', id: string }, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }>, documents: { __typename?: 'SignatoryDocumentConnection', edges: Array<{ __typename?: 'SignatoryDocumentEdge', status?: SignatoryDocumentStatus | null, node: { __typename: 'PdfDocument', id: string } | { __typename: 'XmlDocument', id: string } }> } }>, evidenceProviders: Array<{ __typename: 'AllOfSignatureEvidenceProvider', id: string } | { __typename: 'CriiptoVerifySignatureEvidenceProvider', id: string } | { __typename: 'DrawableSignatureEvidenceProvider', id: string } | { __typename: 'NoopSignatureEvidenceProvider', id: string } | { __typename: 'OidcJWTSignatureEvidenceProvider', id: string }> } }> } } | { __typename: 'BatchSignatoryViewer' } | { __typename: 'SignatoryViewer' } | { __typename: 'UnvalidatedSignatoryViewer' } | { __typename: 'UserViewer' } };
 
 export const BasicDocumentFragmentDoc = gql`
     fragment BasicDocument on Document {
